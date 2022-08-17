@@ -25,7 +25,7 @@ $$
 \chi(\lambda^2) = \chi_0 + RM \cdot \lambda^2
 $$
 
-This linearity, however, is only applicable for simple cases and if there is more than once source the linear relationship will often break down. Two additional problems are the "$n\pi$" ambiguity (multiple "solutions" in $\lambda^2$ space) and bandpass depolarization. One common means of reducing these issues is to apply RM synthesis, which inverts a complex polarization spectrum into a Faraday spectrum:
+This linearity, however, is only applicable for simple cases and if there is more than once source the linear relationship will often break down. Two additional problems are the $``n\pi"$ ambiguity (multiple "solutions" in $\lambda^2$ space) and bandpass depolarization. One common means of reducing these issues is to apply RM synthesis, which inverts a complex polarization spectrum into a Faraday spectrum:
 
 $$
 F(\phi) \propto \int_{-\infty}^{\infty} P(\lambda^2) \cdot e^{-2i\phi(\lambda^2 - \lambda_0^2)}  d\lambda^2
