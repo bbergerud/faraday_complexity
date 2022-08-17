@@ -96,7 +96,7 @@ def createPolarization(
 
     fig, ax = plt.subplots()
     ax.scatter(nu/1e6, p.real, label='$Q$', s=5)
-    ax.scatter(nu/1e6, p.imag, label='$R$', s=5)
+    ax.scatter(nu/1e6, p.imag, label='$U$', s=5)
     ax.legend(loc='lower right', frameon=False)
     ax.set_xlabel(r'$\nu$ (MHz)')
     ax.set_ylabel(r'$P_{\nu}$ (Jy/beam)')
