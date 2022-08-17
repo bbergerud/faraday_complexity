@@ -4,7 +4,7 @@ Faraday rotation can reveal important properties about the medium between us and
 The goal of this project was to classify Faraday sources as being simple or "complex" for the [POSSUM (Polarisation Sky Survey of the Universe's Magnetism) survey](https://possum-survey.org/), which is part of the [Australian SKA Pathfinder (ASKAP)](https://www.atnf.csiro.au/projects/askap/index.html). [Shea Brown](https://github.com/sheabrown) came up with the idea for the project, while [Jacob Isbell](https://github.com/jwisbell), [Daniel LaRocca](https://github.com/DanielLaRocca), and I did most of the programming and analysis. This repository is meant to provide an introduction with a streamlined code implementation.
 
 ## Faraday Rotation
-The polarization that astronomers measure is often represented as a complex number, with $Q$ and $U$ denoting the real and imaginary components respectively. The polarization at a given wavelength $\lambda$ that we observe in the presence of an intervening medium between us an the radio source can be expressed as
+The polarization that astronomers measure is often represented as a complex number, with $Q$ and $U$ denoting the real and imaginary components respectively. The polarization at a given wavelength $\lambda$ that we observe in the presence of an intervening medium between us and the radio source can be expressed as
 
 $$
 P(\lambda^2) = P_0 e^{2i(\chi_0 + \phi \lambda^2)} = Q(\lambda^2) + i\cdot U(\lambda^2)
@@ -25,11 +25,19 @@ $$
 \chi(\lambda^2) = \chi_0 + RM \cdot \lambda^2
 $$
 
-This linearity, however, is only applicable for simple cases and if there is more than once source the linear relationship will often break down. Two additional problems are the $n\pi$ ambiguity (multiple "solutions" in $\lambda^2$ space) and bandpass depolarization. One common means of reducing these issues is to apply RM synthesis, which inverts a complex polarization spectrum into a Faraday spectrum:
+This linearity, however, is only applicable for simple cases and if there is more than one source the linear relationship will often break down. Two additional problems are the $n\pi$ ambiguity (multiple "solutions" in $\lambda^2$ space) and bandpass depolarization. One common means of reducing these issues is to apply RM synthesis, which inverts a complex polarization spectrum into a Faraday spectrum
 
 $$
 F(\phi) \propto \int_{-\infty}^{\infty} P(\lambda^2) \cdot e^{-2i\phi(\lambda^2 - \lambda_0^2)}  d\lambda^2
 $$
+
+where $\lambda_0$ is a reference wavelength, often taken to be zero. Generally, the Faraday spectrum is computing using a discrete approximation
+
+$$
+F(\phi) \propto \sum_{k=1}^{K} P_k e^{2i\phi(\lambda_k^2 - \lambda_0^2)}
+$$
+
+where $K$ is the number of channels, $\lambda_0^2 = \langle \lambda_k^2 \rangle$, and $P_k$ the complex polarization in channel $k$.
 
 Complex sources can sometimes create issues, however, where the RM derived from RM synthesis can be well fit by a simple model that doesn't characterize the individual components nor their mean while also underestimating the uncertainty [(Farnsworth, Rudnick, and Brown, 2011)](https://ui.adsabs.harvard.edu/abs/2011AJ....141..191F/abstract). Thus separating simple and complex sources in large automated surveys can be helpful for improving the accuracy of scientific studies.
 
@@ -68,15 +76,7 @@ fig.show()
 
 ![Polarization Spectrum](figures/polarization_spectrum.png)
 
-While the polarization coverage has a wavelength gap, we can cast it to a Faraday spectrum using the standard inversion
-
-$$
-F(\phi) \propto \sum_{k=1}^{K} P_k e^{2i\phi(\lambda_k^2 - \lambda_0^2)}
-$$
-
-where $K$ is the number of channels, $\lambda_0^2 = \langle \lambda^2 \rangle$, and $P_k$ the complex polarization in channel $k$.
-
-The following code snippet shows how we can cast the polarization spectrum into a normalized Faraday one. Note that the amplitude of the signal peaks at the Faraday depth $(\phi=20)$.
+While the polarization coverage has a wavelength gap around 1400 MHz, we can form a continuous sequence by transforming it into a Faraday spectrum as shown in the following code snippet and graph. Note that the amplitude of the signal peaks at the Faraday depth $(\phi=20)$.
 
 ```python
 from possum.faraday import createFaraday
