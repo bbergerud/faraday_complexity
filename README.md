@@ -71,7 +71,7 @@ fig.show()
 While the polarization coverage has a wavelength gap, we can cast it to a Faraday spectrum using the standard inversion
 
 $$
-F(\phi) \propto \sum_{k=1}^{K} P_i e^{2i\phi(\lambda_k^2 - \lambda_0^2)}
+F(\phi) \propto \sum_{k=1}^{K} P_k e^{2i\phi(\lambda_k^2 - \lambda_0^2)}
 $$
 
 where $K$ is the number of channels, $\lambda_0^2 = \langle \lambda^2 \rangle$, and $P_k$ the complex polarization in channel $k$.
