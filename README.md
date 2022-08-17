@@ -28,7 +28,7 @@ $$
 This linearity, however, is only applicable for simple cases and if there is more than once source the linear relationship will often break down. Two additional problems are the "$n\pi$" ambiguity (multiple "solutions" in $\lambda^2$ space) and bandpass depolarization. One common means of reducing these issues is to apply RM synthesis, which inverts a complex polarization spectrum into a Faraday spectrum:
 
 $$
-F(\phi) \propto \int_{-\infty}^{\infty} P(\lambda^2) \exp\left[-2i\phi(\lambda^2 - \lambda_0^2)\right] \; d\lambda^2
+F(\phi) \propto \int_{-\infty}^{\infty} P(\lambda^2) \cdot e^{-2i\phi(\lambda^2 - \lambda_0^2)}  d\lambda^2
 $$
 
 Complex sources can sometimes create issues, however, where the RM derived from RM synthesis can be well fit by a simple model that doesn't characterize the individual components nor their mean while also underestimating the uncertainty [(Farnsworth, Rudnick, and Brown, 2011)](https://ui.adsabs.harvard.edu/abs/2011AJ....141..191F/abstract). Thus separating simple and complex sources in large automated surveys can be helpful for improving the accuracy of scientific studies.
