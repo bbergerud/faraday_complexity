@@ -39,7 +39,7 @@ Complex sources can sometimes create issues, however, where the RM derived from 
 For this project we constructed synthetic data designed to mimic observations taken by the POSSUM survey. We considered two cases, spectra consisting of a single Faraday source and those consisting of two Faraday sources. For the complex (two-component) case, we generated a polarization spectrum for each source and then added them together:
 
 $$
-P(\lambda^2) = P_1 e^{2i(\chi_1 + \phi_1 \lambda^2)} + P_2 e^{2i(\chi_x + \phi_2 \lambda^2)}
+P(\lambda^2) = P_1 e^{2i(\chi_1 + \phi_1 \lambda^2)} + P_2 e^{2i(\chi_2 + \phi_2 \lambda^2)}
 $$
 
 For each Polarization spectrum we then added random noise to the real and imaginary components, assuming the noise is indepenent of frequency.
