@@ -1,7 +1,7 @@
 # Faraday Complexity
-Faraday rotation can reveal important properties about the medium between us and a radio source and has been used extensively to probe the physical properties of astronomical objects such as the [solar corona](https://astronomy.swin.edu.au/cosmos/C/Corona), [H <span style="font-variant:small-caps">ii</span> (star-forming) regions](https://astronomy.swin.edu.au/cosmos/h/HII+Region), along with the [interstellar](https://astronomy.swin.edu.au/cosmos/I/Interstellar+Gas+Cloud), [intergalactic](https://astronomy.swin.edu.au/cosmos/I/Intergalactic+Medium), and [intracluster](https://astronomy.swin.edu.au/cosmos/I/Intra-cluster+Medium) mediums. However, if the signal is comprised of more than one radio source, then standard analysis using a single component can produce results unrelated to the underlining signals.
+Faraday rotation can reveal important properties about the medium between us and a radio source and has been used extensively to probe the physical properties of astronomical objects such as the [solar corona](https://astronomy.swin.edu.au/cosmos/C/Corona), [H <span style="font-variant:small-caps">ii</span> (star-forming) regions](https://astronomy.swin.edu.au/cosmos/h/HII+Region), along with the [interstellar](https://astronomy.swin.edu.au/cosmos/I/Interstellar+Gas+Cloud), [intergalactic](https://astronomy.swin.edu.au/cosmos/I/Intergalactic+Medium), and [intracluster](https://astronomy.swin.edu.au/cosmos/I/Intra-cluster+Medium) mediums. However, if the signal is comprised of more than one radio source, then standard analysis using a single component can produce results unrelated to the underlining signals [(Farnsworth et al, 2011)](https://ui.adsabs.harvard.edu/abs/2011AJ....141..191F/abstract).
 
-The goal of this project was to classify Faraday sources as being simple or "complex" for the [POSSUM (Polarisation Sky Survey of the Universe's Magnetism) survey](https://possum-survey.org/), which is part of the [Australian SKA Pathfinder (ASKAP)](https://www.atnf.csiro.au/projects/askap/index.html). [Shea Brown](https://github.com/sheabrown) came up with the idea for the project, while [Jacob Isbell](https://github.com/jwisbell), [Daniel LaRocca](https://github.com/DanielLaRocca), and I did most of the programming and analysis. This repository is meant to provide an introduction with a streamlined code implementation.
+The goal of this project was to classify Faraday sources as being simple or "complex" for the [POSSUM (Polarisation Sky Survey of the Universe's Magnetism) survey](https://possum-survey.org/), which is part of the [Australian SKA Pathfinder (ASKAP)](https://www.atnf.csiro.au/projects/askap/index.html). [Shea Brown](https://github.com/sheabrown) came up with the idea for the project, while [Jacob Isbell](https://github.com/jwisbell), [Daniel LaRocca](https://github.com/DanielLaRocca), and I worked together on most of the programming and analysis. This repository is meant to provide an introduction with a streamlined code implementation.
 
 ## Faraday Rotation
 The polarization that astronomers measure is often represented as a complex number, with $Q$ and $U$ denoting the real and imaginary components respectively. The polarization at a given wavelength $\lambda$ that we observe in the presence of an intervening medium between us and the radio source can be expressed as
@@ -39,7 +39,7 @@ $$
 
 where $K$ is the number of channels, $\lambda_0^2 = \langle \lambda_k^2 \rangle$, and $P_k$ the complex polarization in channel $k$.
 
-Complex sources can sometimes create issues, however, where the RM derived from RM synthesis can be well fit by a simple model that doesn't characterize the individual components nor their mean while also underestimating the uncertainty [(Farnsworth, Rudnick, and Brown, 2011)](https://ui.adsabs.harvard.edu/abs/2011AJ....141..191F/abstract). Thus separating simple and complex sources in large automated surveys can be helpful for improving the accuracy of scientific studies.
+Complex sources can sometimes create issues, however, where the RM derived from RM synthesis can be well fit by a simple model that doesn't characterize the individual components nor their mean while also underestimating the uncertainty. Thus separating simple and complex sources in large automated surveys can be helpful for improving the accuracy of scientific studies.
 
 
 ## Synthetic Data
@@ -50,7 +50,7 @@ $$
 P(\lambda^2) = P_1 e^{2i(\chi_1 + \phi_1 \lambda^2)} + P_2 e^{2i(\chi_2 + \phi_2 \lambda^2)}
 $$
 
-For each Polarization spectrum we then added random noise to the real and imaginary components, assuming the noise is indepenent of frequency.
+For each Polarization spectrum we then added random noise to the real and imaginary components, assuming the noise is independent of the frequency.
 
 ### Simple Faraday Source
 
