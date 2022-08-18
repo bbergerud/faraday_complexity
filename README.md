@@ -28,10 +28,10 @@ $$
 This linearity, however, is only applicable for simple cases and if there is more than one source the linear relationship will often break down. Two additional problems are the $n\pi$ ambiguity (multiple "solutions" in $\lambda^2$ space) and bandpass depolarization. One common means of reducing these issues is to apply RM synthesis, which inverts a complex polarization spectrum into a Faraday spectrum
 
 $$
-F(\phi) \propto \int_{-\infty}^{\infty} P(\lambda^2) \cdot e^{-2i\phi(\lambda^2 - \lambda_0^2)}  d\lambda^2
+F(\phi) \propto \int_{0}^{\infty} P(\lambda^2) \cdot e^{-2i\phi(\lambda^2 - \lambda_0^2)}  d\lambda^2
 $$
 
-where $\lambda_0$ is a reference wavelength, often taken to be zero. Generally, the Faraday spectrum is computing using a discrete approximation
+where $\lambda_0$ is a reference wavelength, often taken to be zero. Generally, the Faraday spectrum is computed using a discrete approximation
 
 $$
 F(\phi) \propto \sum_{k=1}^{K} P_k e^{2i\phi(\lambda_k^2 - \lambda_0^2)}
