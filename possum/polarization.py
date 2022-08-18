@@ -12,7 +12,7 @@ createPolarization(nu, chi, depth, amplitude)
 """
 
 import numpy as np
-from typing import Optional
+from typing import Iterable, Optional, Union
 from .units import c
 
 def addPolarizationNoise(
@@ -56,9 +56,9 @@ def addPolarizationNoise(
 
 def createPolarization(
     nu:np.ndarray,
-    chi:float,
-    depth:float,
-    amplitude:float=1,
+    chi:Union[float,Iterable],
+    depth:Union[float,Iterable],
+    amplitude:Union[float,Iterable]=1,
 ) -> np.ndarray:
     """
     Creates a complex polarization spectrum based on the provided parameters.
@@ -68,14 +68,20 @@ def createPolarization(
     nu : np.ndarray
         The range of frequencies in Hz
 
-    chi : float
-        The intrinsic polarization angle of the source [rad]
+    chi : float, Iterable
+        The intrinsic polarization angle for each source [rad].
+        Can be a float for a single source or an iterable containing
+        the value for each component for a complex source.
 
-    depth : float
-        The faraday depth [rad/m^2]
+    depth : float, Iterable
+        The faraday depth for each source [rad/m^2]. Can be a float
+        for a single source or an iterable containing the value for
+        each component for a complex source.
 
-    amplitude : float
-        The amplitude of the signal
+    amplitude : float, Iterable
+        The amplitude of the signal for each each. Can be a float
+        for a single source or an iterable containing the value for
+        each component for a complex source.
 
     Returns
     -------
