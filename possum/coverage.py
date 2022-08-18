@@ -63,15 +63,15 @@ def ASKAP12() -> np.ndarray:
     Returns the set of frequencies associated with the
     ASKAP 12 coverage (700 - 1300, 1500 - 1800 MHz)
     """
-	# ======================================
+    # ======================================
     # Get the two frequency windows
-	# ======================================
+    # ======================================
     band1 = createFrequency(numin=700., numax=1300., nchan=600)
     band2 = createFrequency(numin=1500., numax=1800., nchan=300)
 
-	# ======================================
+    # ======================================
     # Combine frequencies and return
-	# ======================================
+    # ======================================
     return np.concatenate((band1, band2))
 
 def ASKAP36() -> np.ndarray:
