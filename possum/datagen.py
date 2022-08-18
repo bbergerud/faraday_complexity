@@ -15,7 +15,7 @@ createPolarizationArray(params, nu)
     Generates an array of polarizations associated with the parameters
     and frequencies.
 
-datagen(nu, phi, batch_size, seed, **kwargs)
+datagen(nu, phi, batch, seed, **kwargs)
     Generator that yields a Faraday spectrum and class label
 
 generateParams(size, amplitude_generator, chi_generator, depth_generator, sigma_generator, p_complex, seed)
@@ -215,7 +215,7 @@ def createPolarizationArray(
 def datagen(
     nu:np.ndarray,
     phi:np.ndarray,
-    batch_size:int=32,
+    batch:int=32,
     seed:bool=None,
     **kwargs
 ):
@@ -230,7 +230,7 @@ def datagen(
     phi : np.ndarray
         The range of Faraday depths
 
-    batch_size : int
+    batch : int
         The number of object instance to create in each mini-batch
 
     seed : int, optional
@@ -258,9 +258,9 @@ def datagen(
         np.random.seed(seed)
 
     while True:
-        params = generateParams(size=batch_size, **kwargs)
+        params = generateParams(size=batch, **kwargs)
         X = createDataArray(params=params, nu=nu, phi=phi)
-        yield X, tf.keras.utils.to_categorical(params['label'], num_classes=2)
+        yield X, params['label']
 
 def generateParams(
     size:int,
