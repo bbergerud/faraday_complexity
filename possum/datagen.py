@@ -15,7 +15,7 @@ createPolarizationArray(params, nu)
     Generates an array of polarizations associated with the parameters
     and frequencies.
 
-datagen(nu, phi, batch, seed, **kwargs)
+datagen(nu, phi, batch, seed, transform, **kwargs)
     Generator that yields a Faraday spectrum and class label
 
 generateParams(size, amplitude_generator, chi_generator, depth_generator, sigma_generator, p_complex, seed)
