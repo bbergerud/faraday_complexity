@@ -23,7 +23,6 @@ generateParams(size, amplitude_generator, chi_generator, depth_generator, sigma_
 """
 
 import numpy as np
-import tensorflow as tf
 from typing import Dict, Optional
 from .faraday import createFaraday
 from .polarization import addPolarizationNoise, createPolarization
@@ -217,6 +216,7 @@ def datagen(
     phi:np.ndarray,
     batch:int=32,
     seed:bool=None,
+    transform:Optional[callable]=None,
     **kwargs
 ):
     """
@@ -236,6 +236,11 @@ def datagen(
     seed : int, optional
         A random number seed for reproducibility. Optional.
 
+    transform : callable, optional
+        A function for transforming the Faraday spectrum. Useful for
+        removing the complex format into something like the magnitude
+        or splitting into two channels.
+
     **kwargs
         Additional parameters to pass into the generateParams function
 
@@ -247,9 +252,7 @@ def datagen(
 
     label : np.ndarray
         The class labels associated with the Faraday spectrum, with 0
-        corresponding to a simple source and 1 a complex source. Note
-        that the labels have been passed through Keras' to_categorical
-        function.
+        corresponding to a simple source and 1 a complex source.
     """
     # ===========================================
     # Set the random seed (if applicable)
@@ -260,7 +263,7 @@ def datagen(
     while True:
         params = generateParams(size=batch, **kwargs)
         X = createDataArray(params=params, nu=nu, phi=phi)
-        yield X, params['label']
+        yield X if transform is None else transform(X), params['label']
 
 def generateParams(
     size:int,
