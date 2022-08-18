@@ -1,5 +1,5 @@
 # Faraday Complexity
-Faraday rotation can reveal important properties about the medium between us and a radio source and has been used extensively to probe the physical properties of astronomical objects such as the [solar corona](https://astronomy.swin.edu.au/cosmos/C/Corona), [H <span style="font-variant:small-caps">ii</span> (star-forming) regions](https://astronomy.swin.edu.au/cosmos/h/HII+Region), along with the [interstellar](https://astronomy.swin.edu.au/cosmos/I/Interstellar+Gas+Cloud), [intergalactic](https://astronomy.swin.edu.au/cosmos/I/Intergalactic+Medium), and [intracluster](https://astronomy.swin.edu.au/cosmos/I/Intra-cluster+Medium) mediums. However, if the signal is comprised of more than one radio source, then standard analysis using a single component can produce results unrelated to the underlining signals [(Farnsworth et al, 2011)](https://ui.adsabs.harvard.edu/abs/2011AJ....141..191F/abstract).
+Faraday rotation can reveal important properties about the medium between us and a radio source and has been used extensively to probe the physical properties of astronomical objects such as the [solar corona](https://astronomy.swin.edu.au/cosmos/C/Corona), [H <span style="font-variant:small-caps">ii</span> (star-forming) regions](https://astronomy.swin.edu.au/cosmos/h/HII+Region), along with the [interstellar](https://astronomy.swin.edu.au/cosmos/I/Interstellar+Gas+Cloud), [intergalactic](https://astronomy.swin.edu.au/cosmos/I/Intergalactic+Medium), and [intracluster](https://astronomy.swin.edu.au/cosmos/I/Intra-cluster+Medium) mediums. However, if the signal is comprised of more than one radio source, then standard analysis using a single component can produce results that poorly reflect the underlining signals [(Farnsworth et al, 2011)](https://ui.adsabs.harvard.edu/abs/2011AJ....141..191F/abstract).
 
 The goal of this project was to classify Faraday sources as being simple or "complex" for the [POSSUM (Polarisation Sky Survey of the Universe's Magnetism) survey](https://possum-survey.org/), which is part of the [Australian SKA Pathfinder (ASKAP)](https://www.atnf.csiro.au/projects/askap/index.html). [Shea Brown](https://github.com/sheabrown) came up with the idea for the project, while [Jacob Isbell](https://github.com/jwisbell), [Daniel LaRocca](https://github.com/DanielLaRocca), and I worked together on most of the programming and analysis. This repository is meant to provide an introduction with a streamlined code implementation.
 
@@ -66,6 +66,7 @@ np.random.seed(0)
 nu = ASKAP12(); MHz=nu/1e6
 p = createPolarization(nu=nu, chi=0, depth=20, amplitude=1)
 p = addPolarizationNoise(polarization=p, sigma=0.2)
+
 fig, ax = plt.subplots(figsize=(8,4))
 ax.scatter(MHz, p.real, label='$Q$ (real)', s=5)
 ax.scatter(MHz, p.imag, label='$U$ (imag)', s=5)
