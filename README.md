@@ -44,7 +44,7 @@ Complex sources can sometimes create issues, however, where the RM derived from 
 
 ## Synthetic Data
 
-For this project we constructed synthetic data designed to mimic observations taken by the POSSUM survey. We considered two cases, spectra consisting of a single Faraday source and those consisting of two Faraday sources. For the complex (two-component) case, we generated a polarization spectrum for each source and then added them together:
+For this project we constructed synthetic data designed to mimic observations taken by the POSSUM survey. We considered two cases, spectra consisting of a single Faraday source and those consisting of two Faraday sources. For the complex (two-component) case, we generate a polarization spectrum for each source and then add them together:
 
 $$
 P(\lambda^2) = P_1 e^{2i(\chi_1 + \phi_1 \lambda^2)} + P_2 e^{2i(\chi_2 + \phi_2 \lambda^2)}
@@ -52,7 +52,9 @@ $$
 
 For each Polarization spectrum we then added random noise to the real and imaginary components, assuming the noise is indepenent of frequency.
 
-As an example, the following code snippet shows how to generate a noisy polarization spectrum for a single source usnig the ASKAP 12 coverage, which we show in the Figure below:
+### Simple Faraday Source
+
+As an example, the following code snippet shows how to generate a noisy polarization spectrum for a single source using the ASKAP 12 coverage, which we show in the Figure below:
 
 ```python
 import matplotlib.pyplot as plt
@@ -95,6 +97,33 @@ fig.tight_layout()
 fig.show()
 ```
 ![Faraday Spectrum](figures/faraday_spectrum.png)
+
+### Complex Faraday Source
+
+To create a complex source, we can pass in an iterable for the polarization parameters, as illustrated in the following code block. Note that in this case the amplitude peaks are a bit offset from the location of the individual Faraday sources (represented by the dashed vertical lines) while also being shifted away from their mean value.
+
+```python
+params = {'chi': [0,np.pi], 'depth': [-15,5], 'amplitude': [1,0.75]}
+
+p = createPolarization(nu=nu, **params)
+p = addPolarizationNoise(polarization=p, sigma=0.2)
+f = createFaraday(nu=nu, polarization=p, phi=phi)
+
+fig, ax = plt.subplots(figsize=(8,4))
+ax.plot(phi, abs(f), label='abs')
+ax.plot(phi, f.real, label='real')
+ax.plot(phi, f.imag, label='imag')
+ax.legend(loc='lower right', frameon=False)
+ax.set_xlabel(r'$\phi$ (rad m$^{2}$)')
+ax.set_ylabel(r'$P_{\nu}$ (Jy/beam)')
+ax.set_ylim(-1.15, 1.15)
+ax.vlines(params['depth'], ymin=-1.15, ymax=1.15, ls='--', color='black', alpha=0.5)
+fig.tight_layout()
+fig.show()
+```
+
+![Complex Faraday Spectrum](figures/faraday_spectrum_complex.png)
+
 
 ## Publication
 [Shea Brown, Brandon Bergerud, Allison Costa, B M Gaensler, Jacob Isbell, Daniel LaRocca, Ray Norris, Cormac Purcell, Lawrence Rudnick, Xiaohui Sun, Classifying complex Faraday spectra with convolutional neural networks, Monthly Notices of the Royal Astronomical Society, Volume 483, Issue 1, February 2019, Pages 964–970.](https://ui.adsabs.harvard.edu/abs/2019MNRAS.483..964B)
