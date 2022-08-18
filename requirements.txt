@@ -1,2 +1,2 @@
-numpy
-typing
+numpy==1.23.2
+tensorflow==2.9.1
