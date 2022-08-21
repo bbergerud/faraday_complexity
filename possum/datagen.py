@@ -3,7 +3,7 @@ Routines for creating training data for Tensorflow
 
 Functions
 ---------
-createDataArray(params, nu, phi)
+createDataArray(params, nu, phi, noise_function)
     Creates an array of Faraday spectra based on the provided parameters.
     Combines createPolarizationArray and createFaradayArray into a single
     call.
@@ -11,14 +11,14 @@ createDataArray(params, nu, phi)
 createFaradayArray(nu, phi, polarization)
     Converts a polarization array into a normalized Faraday array.
 
-createPolarizationArray(params, nu)
+createPolarizationArray(params, nu, noise_function)
     Generates an array of polarizations associated with the parameters
     and frequencies.
 
 datagen(nu, phi, batch, seed, transform, **kwargs)
     Generator that yields a Faraday spectrum and class label
 
-generateParams(size, amplitude_generator, chi_generator, depth_generator, sigma_generator, p_complex, seed)
+generateParams(size, amplitude_generator, chi_generator, depth_generator, noise_generator, p_complex, seed)
     Generates a set of parameters of the given size
 """
 
@@ -30,7 +30,8 @@ from .polarization import addPolarizationNoise, createPolarization
 def createDataArray(
     params:dict,
     nu:np.ndarray,
-    phi:np.ndarray
+    phi:np.ndarray,
+    noise_function:Optional[callable] = addPolarizationNoise
 ) -> np.ndarray:
     """
     Creates an array of Faraday spectra based on the provided parameters.
@@ -47,6 +48,12 @@ def createDataArray(
 
     phi : np.ndarray
         The range of Faraday depths
+
+    noise_function : callable, optional
+        A function for adding noise to the Polarization spectrum.
+        It should take as input the polarization and any keyword
+        arguments contained in params['noise']. If None, then no
+        noise is added.
 
     Returns
     -------
@@ -80,7 +87,7 @@ def createDataArray(
     for i in range(n):
         plot(i)
     """
-    polarization = createPolarizationArray(params=params, nu=nu)
+    polarization = createPolarizationArray(params=params, nu=nu, noise_function=noise_function)
     return createFaradayArray(nu=nu, phi=phi, polarization=polarization)
 
 def createFaradayArray(
@@ -149,7 +156,8 @@ def createFaradayArray(
 
 def createPolarizationArray(
     params:dict,
-    nu:np.ndarray
+    nu:np.ndarray,
+    noise_function:Optional[callable] = addPolarizationNoise,
 ) -> np.ndarray:
     """
     Generates an array of polarizations associated with the parameters
@@ -162,6 +170,12 @@ def createPolarizationArray(
 
     nu : np.ndarray
         A set of wavelengths over which to calculate the polarization
+
+    noise_function : callable, optional
+        A function for adding noise to the Polarization spectrum.
+        It should take as input the polarization and any keyword
+        arguments contained in params['noise']. If None, then no
+        noise is added.
 
     Returns
     -------
@@ -204,10 +218,11 @@ def createPolarizationArray(
             amplitude=params['amplitude'][i],
         )
 
-        polarization[i] = addPolarizationNoise(
-            polarization=p,
-            sigma=params['sigma'][i]
-        )
+        if noise_function is not None:
+            polarization[i] = noise_function(
+                polarization=p,
+                **{k:v[i] for k,v in params['noise'].items()}
+            )
 
     return polarization
 
@@ -270,7 +285,7 @@ def generateParams(
     amplitude_generator:callable = lambda size: np.random.uniform(0.01, 1.0, size),
     chi_generator:callable = lambda size: np.random.uniform(-np.pi, np.pi, size),
     depth_generator:callable = lambda size: np.random.uniform(-50, 50, size),
-    sigma_generator:callable = lambda size: np.random.uniform(0.01, 1.0, size),
+    noise_generator:Dict[str,callable] = {'sigma': lambda size: np.random.rand(size)},
     p_complex:float = 0.5,
     seed:Optional[int] = None,
 ) -> Dict[str,np.ndarray]:
@@ -297,7 +312,12 @@ def generateParams(
         Function that takes as input a size parameter and returns a
         numpy array of random Faraday depths of the specified size.
 
-    sigma_generator : callable
+    noise_generator : callable
+        A dictionary containing a set of (key,value) pairs where the key
+        represent the argument to the noise function and whose value is
+        a function that takes as input a size parameter and returns a
+        
+        
         Function that takes as input a size parameter and returns a numpy
         array of random noise standard deviations of the specified size.
 
@@ -331,7 +351,7 @@ def generateParams(
     amplitude = np.ones(size).astype('object')
     chi = chi_generator(size).astype('object')
     depth = depth_generator(size).astype('object')
-    sigma = sigma_generator(size)
+    noise = {k:v(size) for k,v in noise_generator.items()}
 
     # Add secondary components
     loc = np.where(label == 1)[0]
@@ -348,6 +368,6 @@ def generateParams(
         'chi': chi,
         'depth': depth,
         'label': label,
-        'sigma': sigma,
+        'noise': noise,
     }
 
