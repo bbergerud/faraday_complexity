@@ -231,6 +231,7 @@ def datagen(
     phi:np.ndarray,
     batch:int=32,
     seed:bool=None,
+    noise_function:Optional[callable]=addPolarizationNoise,
     transform:Optional[callable]=None,
     **kwargs
 ):
@@ -251,6 +252,12 @@ def datagen(
     seed : int, optional
         A random number seed for reproducibility. Optional.
 
+    noise_function : callable, optional
+        A function for adding noise to the Polarization spectrum.
+        It should take as input the polarization and any keyword
+        arguments contained in params['noise']. If None, then no
+        noise is added.
+
     transform : callable, optional
         A function for transforming the Faraday spectrum. Useful for
         removing the complex format into something like the magnitude
@@ -268,6 +275,19 @@ def datagen(
     label : np.ndarray
         The class labels associated with the Faraday spectrum, with 0
         corresponding to a simple source and 1 a complex source.
+
+    Examples
+    --------
+    import numpy as np
+    from possum.coverage import ASKAP12
+    from possum.datagen import datagen
+
+    nu = ASKAP12(); MHz = nu/1e6
+    phi = np.arange(-100,101)
+    dgen = datagen(nu=nu, phi=phi,batch=32)
+
+    X, y = next(iter(dgen))
+    print(X.shape, y.shape)
     """
     # ===========================================
     # Set the random seed (if applicable)
@@ -277,7 +297,7 @@ def datagen(
 
     while True:
         params = generateParams(size=batch, **kwargs)
-        X = createDataArray(params=params, nu=nu, phi=phi)
+        X = createDataArray(params=params, nu=nu, phi=phi, noise_function=noise_function)
         yield X if transform is None else transform(X), params['label']
 
 def generateParams(
