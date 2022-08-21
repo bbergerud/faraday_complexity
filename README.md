@@ -55,9 +55,11 @@ R(\phi) = \frac{
 $$
 
 Finally, the Faraday dispersion is generally calculated using a discrete approximation
+
 $$
 \tilde{F}(\phi) \propto \sum_{k=1}^{K} \tilde{P}_k e^{2i\phi(\lambda_k^2 - \lambda_0^2)}
 $$
+
 where $K$ is the number of channels, $\lambda_k$ the wavelength associated with channel $k$, $\lambda_0^2 = (\sum W_k \lambda_k^2) / \sum_k W_k$, and $\tilde{P}_k$ the complex polarization in channel $k$.
 
 Complex sources can sometimes create issues, however, where the RM derived from RM synthesis can be well fit by a simple model that doesn't characterize the individual components nor their mean while also underestimating the uncertainty. Thus separating simple and complex sources in large automated surveys can be helpful for improving the accuracy of scientific studies.
