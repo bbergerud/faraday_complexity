@@ -65,9 +65,36 @@ class classifier:
 
     residual(kernel_size, act, batchNorm)
         Adds a residual unit to the model sequence.
+
+    Examples
+    --------
+    import tensorflow as tf
+    import numpy as np
+    from possum.cnn import classifier
+
+    optim = tf.keras.optimizers.SGD(learning_rate=0.001)
+
+    model = classifier(channels=1)
+    for i in range(5):
+        model.conv(filters=8*(2**i))
+        model.batchNorm()
+        model.activation('relu')
+        model.pool(max_pool=True)
+    for i in range(2):
+        model.inception(conv=[3,5], pool=[3], max_pool=True, act='relu', stride=1, filters=128)
+    model.globalPooling(max_pool=True)
+    model.dropout(0.3)
+    model.compile(optimizer=optim)
+
+    x = np.random.randn(5,101,1)
+    y = model(x)
+    print(y.shape)
     """
     def __init__(self, channels:int, width:Optional[int]=None):
         self.model = [tf.keras.layers.Input(shape=(width,channels))]
+
+    def __call__(self, *args, **kwargs):
+        return self.model(*args, **kwargs)
 
     def activation(self, act:str='relu', **kwargs):
         """
