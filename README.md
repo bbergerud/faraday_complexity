@@ -148,6 +148,43 @@ fig.show()
 
 ![Complex Faraday Spectrum](figures/faraday_spectrum_complex.png)
 
+### Correlated Noise
+
+In our previous examples we added white (Gaussian) noise to our polarization spectrum. In general one would expect the noise in a channel to be correlated with the noise of its neighboring channels. One way of incorporating this is to use a [Gaussian process](https://en.wikipedia.org/wiki/Gaussian_process). In the example below we utilize the [george](https://george.readthedocs.io/en/latest/) package to add correlated noise to our polarization spectrum:
+
+```python
+import george
+import matplotlib.pyplot as plt
+import numpy as np
+from possum.coverage import ASKAP12
+from possum.polarization import createPolarization
+
+def addGaussianProcessNoise(
+    polarization:np.ndarray,
+    nu:np.ndarray,
+    kernel:callable,
+):
+    gp = george.GP(kernel)
+    noise = gp.sample(nu) + 1j*gp.sample(nu)
+    return polarization + noise
+
+np.random.seed(0)
+nu = ASKAP12(); MHz = nu/1e6
+p = createPolarization(nu=nu, chi=0, depth=20, amplitude=1)
+gp = addGaussianProcessNoise(polarization=p, nu=MHz, kernel=0.1*george.kernels.ExpSquaredKernel(100))
+
+fig, ax = plt.subplots(figsize=(8,4))
+ax.scatter(MHz, p.real, label='$Q$ (real)', s=5, color='blue')
+ax.scatter(MHz, p.imag, label='$U$ (imag)', s=5, color='orange')
+ax.scatter(MHz, gp.real, s=5, color='blue', alpha=0.5)
+ax.scatter(MHz, gp.imag,  s=5, color='orange', alpha=0.5)
+ax.legend(loc='lower right', frameon=False)
+ax.set_xlabel(r'$\nu$ (MHz)')
+ax.set_ylabel(r'$P_{\nu}$ (Jy/beam)')
+fig.show() 
+```
+
+We'll stick with white noise in our examples, but include this exapmle for those interested in better modeling the noise.
 
 ## Publication
 [Shea Brown, Brandon Bergerud, Allison Costa, B M Gaensler, Jacob Isbell, Daniel LaRocca, Ray Norris, Cormac Purcell, Lawrence Rudnick, Xiaohui Sun, Classifying complex Faraday spectra with convolutional neural networks, Monthly Notices of the Royal Astronomical Society, Volume 483, Issue 1, February 2019, Pages 964–970.](https://ui.adsabs.harvard.edu/abs/2019MNRAS.483..964B)
