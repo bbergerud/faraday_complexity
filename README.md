@@ -1,5 +1,5 @@
 # Faraday Complexity
-Faraday rotation can reveal important properties about the medium between us and a radio source and has been used extensively to probe the physical properties of astronomical objects such as the [solar corona](https://astronomy.swin.edu.au/cosmos/C/Corona), [H <span style="font-variant:small-caps">ii</span> (star-forming) regions](https://astronomy.swin.edu.au/cosmos/h/HII+Region), along with the [interstellar](https://astronomy.swin.edu.au/cosmos/I/Interstellar+Gas+Cloud), [intergalactic](https://astronomy.swin.edu.au/cosmos/I/Intergalactic+Medium), and [intracluster](https://astronomy.swin.edu.au/cosmos/I/Intra-cluster+Medium) mediums. However, if the signal is comprised of more than one radio source, then standard analysis using a single component can produce results that poorly reflect the underlining signals [(Farnsworth et al, 2011)](https://ui.adsabs.harvard.edu/abs/2011AJ....141..191F/abstract).
+[Faraday rotation](https://en.wikipedia.org/wiki/Faraday_effect) has been extensively used to probe the physical properties of astronomical objects such as the [solar corona](https://astronomy.swin.edu.au/cosmos/C/Corona), [H <span style="font-variant:small-caps">ii</span> (star-forming) regions](https://astronomy.swin.edu.au/cosmos/h/HII+Region), and the [interstellar](https://astronomy.swin.edu.au/cosmos/I/Interstellar+Gas+Cloud), [intergalactic](https://astronomy.swin.edu.au/cosmos/I/Intergalactic+Medium), and [intracluster](https://astronomy.swin.edu.au/cosmos/I/Intra-cluster+Medium) mediums. However, if the signal is comprised of more than one radio source, then standard analysis using a single component can produce results that poorly reflect the underlining signals [(Farnsworth et al, 2011)](https://ui.adsabs.harvard.edu/abs/2011AJ....141..191F/abstract).
 
 The goal of this project was to classify Faraday sources as being simple or "complex" for the [POSSUM (Polarisation Sky Survey of the Universe's Magnetism) survey](https://possum-survey.org/), which is part of the [Australian SKA Pathfinder (ASKAP)](https://www.atnf.csiro.au/projects/askap/index.html). [Shea Brown](https://github.com/sheabrown) came up with the idea for the project, while [Jacob Isbell](https://github.com/jwisbell), [Daniel LaRocca](https://github.com/DanielLaRocca), and I worked together on most of the programming and analysis. This repository is meant to provide an introduction with a streamlined code implementation.
 
@@ -16,7 +16,7 @@ $$
 \phi(\boldsymbol{r}) \propto \int_{\boldsymbol{r}}^{0} n_e \boldsymbol{B} \cdot d\boldsymbol{\ell}
 $$
 
-where $n_e$ is the electron density, $\boldsymbol{B}$ the magnetic field vector, $d\boldsymbol{\ell}$ an infinitesmal distance along the line of sight, and  $\boldsymbol{r}$ the location of the synchrotron radio source.
+where $n_e$ is the electron density, $\boldsymbol{B}$ the magnetic field vector, $d\boldsymbol{\ell}$ an infinitesmal distance along the line of sight, and  $\boldsymbol{r}$ the location of the synchrotron radio source. The dot product $\boldsymbol{B} \cdot d\boldsymbol{\ell}$ captures the orientation of the magnetic field such that a positive Faraday depth implies the magnetic field is pointing towards the observer.
 
 
 Faraday rotation is often parameterized by the rotation measure (RM), which measures the relationship between the wavelength and polarization angle $\chi$ via
@@ -25,19 +25,40 @@ $$
 \chi(\lambda^2) = \chi_0 + RM \cdot \lambda^2
 $$
 
-This linearity, however, is only applicable for simple cases and if there is more than one source the linear relationship will often break down. Two additional problems are the $n\pi$ ambiguity (multiple "solutions" in $\lambda^2$ space) and bandpass depolarization. One common means of reducing these issues is to apply RM synthesis, which inverts a complex polarization spectrum into a Faraday spectrum
+This linearity, however, is only applicable for simple cases and if there is more than one source the linear relationship will often break down. Two additional problems are the $n\pi$ ambiguity (multiple "solutions" in $\lambda^2$ space) and bandpass depolarization. One common means of reducing these issues is to apply RM synthesis [(Brentjens and de Bruyn, 2005)](https://ui.adsabs.harvard.edu/abs/2005A%26A...441.1217B/abstract), which inverts a complex polarization spectrum into a Faraday dispersion function $F$, which are related to one another via
 
 $$
-F(\phi) \propto \int_{0}^{\infty} P(\lambda^2) \cdot e^{-2i\phi(\lambda^2 - \lambda_0^2)}  d\lambda^2
+F(\phi) \propto \int_{-\infty}^{\infty} P(\lambda^2) \cdot e^{-2i\phi(\lambda^2 - \lambda_0^2)}  d\lambda^2
 $$
 
-where $\lambda_0$ is a reference wavelength, often taken to be zero. Generally, the Faraday spectrum is computed using a discrete approximation
 
 $$
-F(\phi) \propto \sum_{k=1}^{K} P_k e^{2i\phi(\lambda_k^2 - \lambda_0^2)}
+P(\lambda^2) \propto \int_{-\infty}^{\infty} F(\phi) \cdot e^{2i\phi(\lambda^2 - \lambda_0^2)} d\phi
 $$
 
-where $K$ is the number of channels, $\lambda_0^2 = \langle \lambda_k^2 \rangle$, and $P_k$ the complex polarization in channel $k$.
+where $\lambda_0$ is a reference wavelength. The relationship is similar to a Fourier transform but the polarization lacks physical meaning at $\lambda^2 < 0$, which can be overcome by assuming that $P(\lambda^2) = P(-\lambda^2)$.
+
+In practice we only observe over a portion of the wavelength space. To generalize the relationship between the Faraday dispersion and polarization, we can introduce a window function $W(\lambda^2)$ that is nonzero where measurements are made and zero elsewhere (the weights can be different depending on the relative noise in the different channels). The observed polarization $\tilde{P}$ then becomes
+
+$$
+\tilde{P}(\lambda^2) = W(\lambda^2) P(\lambda^2)
+$$
+
+and our Fourier relationships hold but for the quantities $\tilde{F}$ and $\tilde{P}$, but now $\tilde{F}$ represents a convolution of the intrinsic Faraday dispersion function $F$ and the rotation measure transfer function
+
+$$
+R(\phi) = \frac{
+    \int_{-\infty}^{\infty} W(\lambda^2) e^{-2i\phi(\lambda^2 - \lambda_0^2)} d\lambda^2
+}{
+    \int_{-\infty}^{\infty} W(\lambda^2) d\lambda^2
+}
+$$
+
+Finally, the Faraday dispersion is generally calculated using a discrete approximation
+$$
+\tilde{F}(\phi) \propto \sum_{k=1}^{K} \tilde{P}_k e^{2i\phi(\lambda_k^2 - \lambda_0^2)}
+$$
+where $K$ is the number of channels, $\lambda_k$ the wavelength associated with channel $k$, $\lambda_0^2 = (\sum W_k \lambda_k^2) / \sum_k W_k$, and $\tilde{P}_k$ the complex polarization in channel $k$.
 
 Complex sources can sometimes create issues, however, where the RM derived from RM synthesis can be well fit by a simple model that doesn't characterize the individual components nor their mean while also underestimating the uncertainty. Thus separating simple and complex sources in large automated surveys can be helpful for improving the accuracy of scientific studies.
 
@@ -79,7 +100,7 @@ fig.show()
 
 ![Polarization Spectrum](figures/polarization_spectrum.png)
 
-While the polarization coverage has a wavelength gap around 1400 MHz, we can form a continuous sequence by transforming it into a Faraday spectrum as shown in the following code snippet and graph. Note that the amplitude of the signal peaks at the Faraday depth $(\phi=20)$.
+While the polarization coverage has a wavelength gap around 1400 MHz, we can form a continuous sequence by transforming it into a Faraday spectrum as shown in the following code snippet and graph. Note that the amplitude of the signal peaks at the Faraday depth of the source $(\phi=20)$.
 
 ```python
 from possum.faraday import createFaraday
@@ -92,7 +113,7 @@ ax.plot(phi, abs(f), label='abs')
 ax.plot(phi, f.real, label='real')
 ax.plot(phi, f.imag, label='imag')
 ax.legend(loc='lower right', frameon=False)
-ax.set_xlabel(r'$\phi$ (rad m$^{2}$)')
+ax.set_xlabel(r'$\phi$ (rad m$^{-2}$)')
 ax.set_ylabel(r'$P_{\nu}$ (Jy/beam)')
 fig.tight_layout()
 fig.show()
@@ -115,7 +136,7 @@ ax.plot(phi, abs(f), label='abs')
 ax.plot(phi, f.real, label='real')
 ax.plot(phi, f.imag, label='imag')
 ax.legend(loc='lower right', frameon=False)
-ax.set_xlabel(r'$\phi$ (rad m$^{2}$)')
+ax.set_xlabel(r'$\phi$ (rad m$^{-2}$)')
 ax.set_ylabel(r'$P_{\nu}$ (Jy/beam)')
 ax.set_ylim(-1.15, 1.15)
 ax.vlines(params['depth'], ymin=-1.15, ymax=1.15, ls='--', color='black', alpha=0.5)
