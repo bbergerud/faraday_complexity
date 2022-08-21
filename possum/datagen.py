@@ -31,7 +31,8 @@ def createDataArray(
     params:dict,
     nu:np.ndarray,
     phi:np.ndarray,
-    noise_function:Optional[callable] = addPolarizationNoise
+    noise_function:Optional[callable] = addPolarizationNoise,
+    noise_kwargs:dict={},
 ) -> np.ndarray:
     """
     Creates an array of Faraday spectra based on the provided parameters.
@@ -51,9 +52,13 @@ def createDataArray(
 
     noise_function : callable, optional
         A function for adding noise to the Polarization spectrum.
-        It should take as input the polarization and any keyword
-        arguments contained in params['noise']. If None, then no
-        noise is added.
+        It should take as input the polarization and any arguments
+        contained in params['noise'] or noise_kwargs. If None,
+        then no noise is added.
+
+    noise_kwargs : dict
+        A dictionary containing additional keyword arguments to pass
+        into the noise function that are not contained in params.
 
     Returns
     -------
@@ -87,7 +92,7 @@ def createDataArray(
     for i in range(n):
         plot(i)
     """
-    polarization = createPolarizationArray(params=params, nu=nu, noise_function=noise_function)
+    polarization = createPolarizationArray(params=params, nu=nu, noise_function=noise_function, noise_kwargs=noise_kwargs)
     return createFaradayArray(nu=nu, phi=phi, polarization=polarization)
 
 def createFaradayArray(
@@ -158,6 +163,7 @@ def createPolarizationArray(
     params:dict,
     nu:np.ndarray,
     noise_function:Optional[callable] = addPolarizationNoise,
+    noise_kwargs:dict={},
 ) -> np.ndarray:
     """
     Generates an array of polarizations associated with the parameters
@@ -173,9 +179,13 @@ def createPolarizationArray(
 
     noise_function : callable, optional
         A function for adding noise to the Polarization spectrum.
-        It should take as input the polarization and any keyword
-        arguments contained in params['noise']. If None, then no
-        noise is added.
+        It should take as input the polarization and any arguments
+        contained in params['noise'] or noise_kwargs. If None,
+        then no noise is added.
+
+    noise_kwargs : dict
+        A dictionary containing additional keyword arguments to pass
+        into the noise function that are not contained in params.
 
     Returns
     -------
@@ -221,7 +231,8 @@ def createPolarizationArray(
         if noise_function is not None:
             polarization[i] = noise_function(
                 polarization=p,
-                **{k:v[i] for k,v in params['noise'].items()}
+                **{k:v[i] for k,v in params['noise'].items()},
+                **noise_kwargs
             )
 
     return polarization
@@ -232,6 +243,7 @@ def datagen(
     batch:int=32,
     seed:bool=None,
     noise_function:Optional[callable]=addPolarizationNoise,
+    noise_kwargs:dict={},
     transform:Optional[callable]=None,
     **kwargs
 ):
@@ -254,9 +266,13 @@ def datagen(
 
     noise_function : callable, optional
         A function for adding noise to the Polarization spectrum.
-        It should take as input the polarization and any keyword
-        arguments contained in params['noise']. If None, then no
-        noise is added.
+        It should take as input the polarization and any arguments
+        contained in params['noise'] or noise_kwargs. If None,
+        then no noise is added.
+
+    noise_kwargs : dict
+        A dictionary containing additional keyword arguments to pass
+        into the noise function that are not contained in params.
 
     transform : callable, optional
         A function for transforming the Faraday spectrum. Useful for
@@ -297,7 +313,7 @@ def datagen(
 
     while True:
         params = generateParams(size=batch, **kwargs)
-        X = createDataArray(params=params, nu=nu, phi=phi, noise_function=noise_function)
+        X = createDataArray(params=params, nu=nu, phi=phi, noise_function=noise_function, noise_kwargs=noise_kwargs)
         yield X if transform is None else transform(X), params['label']
 
 def generateParams(
@@ -336,10 +352,7 @@ def generateParams(
         A dictionary containing a set of (key,value) pairs where the key
         represent the argument to the noise function and whose value is
         a function that takes as input a size parameter and returns a
-        
-        
-        Function that takes as input a size parameter and returns a numpy
-        array of random noise standard deviations of the specified size.
+        a sequence of random parameter values of the specified size.        
 
     p_complex : float
         The probability that a source is complex.
@@ -351,7 +364,7 @@ def generateParams(
     -------
     params : dict
         A dictionary containing the values associated with the
-        amplitude, chi, depth, label, and sigma parameters, where
+        amplitude, chi, depth, label, and noise parameters, where
         label=0 indicates a simple source and label=1 a complex source.
 
     Examples
