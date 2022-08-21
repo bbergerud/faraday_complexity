@@ -7,7 +7,7 @@ addPolarizationNoise(polarization, sigma, seed)
     Adds random noise to the Polarization spectrum. Assumes noise is
     independent of the frequency.
 
-createPolarization(nu, chi, depth, amplitude, apply_shift)
+createPolarization(nu, chi, depth, amplitude)
     Creates a complex polarization spectrum based on the provided parameters.
 """
 
@@ -59,7 +59,6 @@ def createPolarization(
     chi:Union[float,Iterable],
     depth:Union[float,Iterable],
     amplitude:Union[float,Iterable]=1,
-    apply_shift:bool=False,
 ) -> np.ndarray:
     """
     Creates a complex polarization spectrum based on the provided parameters.
@@ -83,10 +82,6 @@ def createPolarization(
         The amplitude of the signal for each each. Can be a float
         for a single source or an iterable containing the value for
         each component for a complex source.
-
-    apply_shift : bool
-        Boolean indicating whether to shift the squared wavelengths
-        by subtracting the mean (True) or not (False).
 
     Returns
     -------
