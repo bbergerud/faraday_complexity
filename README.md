@@ -183,8 +183,9 @@ ax.set_xlabel(r'$\nu$ (MHz)')
 ax.set_ylabel(r'$P_{\nu}$ (Jy/beam)')
 fig.show() 
 ```
+![Polarization with Gaussian Process noise](figures/polarization_gaussian_process.png)
 
-We'll stick with white noise in our examples, but include this exapmle for those interested in better modeling the noise.
+We'll stick with white noise in our examples, but include this example for those interested in better modeling the noise.
 
 ## Publication
 [Shea Brown, Brandon Bergerud, Allison Costa, B M Gaensler, Jacob Isbell, Daniel LaRocca, Ray Norris, Cormac Purcell, Lawrence Rudnick, Xiaohui Sun, Classifying complex Faraday spectra with convolutional neural networks, Monthly Notices of the Royal Astronomical Society, Volume 483, Issue 1, February 2019, Pages 964–970.](https://ui.adsabs.harvard.edu/abs/2019MNRAS.483..964B)
