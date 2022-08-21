@@ -25,6 +25,46 @@ class classifier:
 
     width: int, optional
         The size of the 1D tensor
+
+    Methods
+    -------
+    activation(act, **kwargs)
+        Adds an activation function to the model sequence.
+
+    batchNorm(**kwargs)
+        Adds an batch normalization operation to the model sequence.
+
+    compile(loss, metrics, optimizer, weights)
+        Adds a final dense and activation layer for the output and compiles
+        the model.
+
+    conv(filters, kernel_size, **kwargs)
+        Adds a convolution operation to the model sequence.
+
+    dense(neurons, **kwargs)
+        Adds a dense operation to the model sequence.
+
+    dropout(drop, **kwargs)
+        Adds a dropout operation to the model sequence.
+
+    flatten()
+        Adds a flatten operation to the model sequence
+
+    hidden(neurons, drop, activation, depth)
+        Adds a set of hidden layers to the model sequence, defined as
+        the sequence Dense -> Dropout -> Activation
+
+    globalPooling(max_pool, **kwargs)
+        Adds a global pooling layer to the model sequence
+
+    pool(max_pool, **kwargs)
+        Adds a pooling layer to the model sequence
+
+    inception(conv, pool, max_pool, filters, stride, act)
+        Adds an inception layer to the model sequence
+
+    residual(kernel_size, act, batchNorm)
+        Adds a residual unit to the model sequence.
     """
     def __init__(self, channels:int, width:Optional[int]=None):
         self.model = [tf.keras.layers.Input(shape=(width,channels))]
