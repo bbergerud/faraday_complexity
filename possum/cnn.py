@@ -317,7 +317,7 @@ class classifier:
             "padding": 'same'
         }
 
-        name = "layer{:d}/convl1x{:d}".format(self.__inception, 1)
+        name = "layer{:d}/conv1x{:d}".format(self.__inception, 1)
         convl_1x1 = tf.keras.layers.Conv1D(kernel_size=1, name=name, **params)(self.model[-1])
         batch_1x1 = tf.keras.layers.BatchNormalization()(convl_1x1)
         activ_1x1 = tf.keras.layers.Activation(activation=act)(batch_1x1)
@@ -333,7 +333,7 @@ class classifier:
             batch_1x1 = tf.keras.layers.BatchNormalization()(convl_1x1)
             activ_1x1 = tf.keras.layers.Activation(activation=act)(batch_1x1)
 
-            name = "layer{:d}/convl1x{:d}".format(self.__inception, c)
+            name = "layer{:d}/conv1x{:d}".format(self.__inception, c)
             convl_1xc = tf.keras.layers.Conv1D(kernel_size=c, name=name, **params)(activ_1x1)
             batch_1xc = tf.keras.layers.BatchNormalization()(convl_1xc)
             activ_1xc = tf.keras.layers.Activation(activation=act)(batch_1xc)
