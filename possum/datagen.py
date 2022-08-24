@@ -15,7 +15,7 @@ createPolarizationArray(params, nu, noise_function)
     Generates an array of polarizations associated with the parameters
     and frequencies.
 
-datagen(nu, phi, batch, seed, transform, **kwargs)
+datagen(nu, phi, batch, seed, transform, yield_params, **kwargs)
     Generator that yields a Faraday spectrum and class label
 
 generateParams(size, amplitude_generator, chi_generator, depth_generator, noise_generator, p_complex, seed)
@@ -245,6 +245,7 @@ def datagen(
     noise_function:Optional[callable]=addPolarizationNoise,
     noise_kwargs:dict={},
     transform:Optional[callable]=None,
+    yield_params:bool=False,
     **kwargs
 ):
     """
@@ -279,6 +280,11 @@ def datagen(
         removing the complex format into something like the magnitude
         or splitting into two channels.
 
+    yield_params : bool
+        Boolean indicating whether to also yield the parameter dictionary
+        (True) or just the label (False). Default is False to align with
+        Tensorflow's expectation for training.
+
     **kwargs
         Additional parameters to pass into the generateParams function
 
@@ -288,9 +294,15 @@ def datagen(
         The Faraday spectrum normalized to have a peak amplitude of 1. 
         Aligned with the provided phi values.
 
-    label : np.ndarray
+    label : np.ndarray, optional
         The class labels associated with the Faraday spectrum, with 0
-        corresponding to a simple source and 1 a complex source.
+        corresponding to a simple source and 1 a complex source. The
+        label is returned if yield_params=False.
+    
+    params : dict
+        The parameters values generated during the call. Useful for
+        accessing the data used to generate the Faraday spectra. This
+        is returned if yield_params=True. 
 
     Examples
     --------
@@ -314,7 +326,7 @@ def datagen(
     while True:
         params = generateParams(size=batch, **kwargs)
         X = createDataArray(params=params, nu=nu, phi=phi, noise_function=noise_function, noise_kwargs=noise_kwargs)
-        yield X if transform is None else transform(X), params['label']
+        yield X if transform is None else transform(X), params if yield_params else params['label']
 
 def generateParams(
     size:int,
