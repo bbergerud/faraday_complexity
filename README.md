@@ -38,13 +38,13 @@ $$
 
 where $\lambda_0$ is a reference wavelength. The relationship is similar to a Fourier transform but the polarization lacks physical meaning at $\lambda^2 < 0$, which can be overcome by assuming that $P(\lambda^2) = P(-\lambda^2)$.
 
-In practice we only observe over a portion of the wavelength space. To generalize the relationship between the Faraday dispersion and polarization, we can introduce a window function $W(\lambda^2)$ that is nonzero where measurements are made and zero elsewhere (the weights can be different depending on the relative noise in the different channels). The observed polarization $\tilde{P}$ then becomes
+In practice we only observe over a portion of the wavelength space. To generalize the relationship between the Faraday dispersion and polarization, we can introduce a window function $W(\lambda^2)$ that is nonzero where measurements are made and zero elsewhere (the nonzero weights can be different depending on the relative noise in the different channels, but we'll assume that they are the same for our purposes). The observed polarization $\tilde{P}$ then becomes
 
 $$
 \tilde{P}(\lambda^2) = W(\lambda^2) P(\lambda^2)
 $$
 
-and our Fourier relationships hold but for the quantities $\tilde{F}$ and $\tilde{P}$, but now $\tilde{F}$ represents a convolution of the intrinsic Faraday dispersion function $F$ and the rotation measure transfer function
+and our Fourier relationships hold but for the quantities $\tilde{F}$ and $\tilde{P}$, but now $\tilde{F} = F*R$ represents a convolution of the intrinsic Faraday dispersion function $F$ and the rotation measure transfer function
 
 $$
 R(\phi) = \frac{
@@ -53,6 +53,8 @@ R(\phi) = \frac{
     \int_{-\infty}^{\infty} W(\lambda^2) d\lambda^2
 }
 $$
+
+For POSSUM, this convolution results in a FWHM of $\approx 23$ rad m$^{-2}$ for the PSF.
 
 Finally, the Faraday dispersion is generally calculated using a discrete approximation
 
@@ -158,6 +160,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 from possum.coverage import ASKAP12
 from possum.polarization import createPolarization
+from possum.faraday import createFaraday
 
 def addGaussianProcessNoise(
     polarization:np.ndarray,
@@ -171,19 +174,35 @@ def addGaussianProcessNoise(
 np.random.seed(0)
 nu = ASKAP12(); MHz = nu/1e6
 p = createPolarization(nu=nu, chi=0, depth=20, amplitude=1)
-gp = addGaussianProcessNoise(polarization=p, nu=MHz, kernel=0.1*george.kernels.ExpSquaredKernel(100))
+gp = addGaussianProcessNoise(polarization=p, nu=MHz, kernel=0.1*george.kernels.ExpSquaredKernel(250))
 
-fig, ax = plt.subplots(figsize=(8,4))
-ax.scatter(MHz, p.real, label='$Q$ (real)', s=5, color='blue')
-ax.scatter(MHz, p.imag, label='$U$ (imag)', s=5, color='orange')
-ax.scatter(MHz, gp.real, s=5, color='blue', alpha=0.5)
-ax.scatter(MHz, gp.imag,  s=5, color='orange', alpha=0.5)
-ax.legend(loc='lower right', frameon=False)
-ax.set_xlabel(r'$\nu$ (MHz)')
-ax.set_ylabel(r'$P_{\nu}$ (Jy/beam)')
+phi = np.linspace(-50,50,100)
+f = createFaraday(nu=nu, phi=phi, polarization=p)
+f_gp = createFaraday(nu=nu, phi=phi, polarization=gp)
+
+fig, ax = plt.subplots(nrows=2, figsize=(8,8))
+ax[0].scatter(MHz, p.real, label='$Q$ (real)', s=2, color='tab:blue')
+ax[0].scatter(MHz, p.imag, label='$U$ (imag)', s=2, color='tab:orange')
+ax[0].scatter(MHz, gp.real, s=2, color='tab:blue', alpha=0.5)
+ax[0].scatter(MHz, gp.imag,  s=2, color='tab:orange', alpha=0.5)
+ax[0].legend(loc='lower right', frameon=False)
+ax[0].set_xlabel(r'$\nu$ (MHz)')
+ax[0].set_ylabel(r'$P_{\nu}$ (Jy/beam)')
+
+ax[1].plot(phi, abs(f), label='abs', color='tab:blue')
+ax[1].plot(phi, abs(f_gp), color='tab:blue', alpha=0.5, linestyle='--')
+ax[1].plot(phi, f.real, label='real', color='tab:orange')
+ax[1].plot(phi, f_gp.real, color='tab:orange', alpha=0.5, linestyle='--')
+ax[1].plot(phi, f.imag, label='imag', color='tab:green')
+ax[1].plot(phi, f_gp.imag, color='tab:green', alpha=0.5, linestyle='--')
+ax[1].legend(loc='lower right', frameon=False)
+ax[1].set_xlabel(r'$\phi$ (rad m$^{-2}$)')
+ax[1].set_ylabel(r'$P_{\nu}$ (Jy/beam)')
+ax[1].set_ylim(-1.15, 1.15)
+fig.tight_layout()
 fig.show() 
 ```
-![Polarization with Gaussian Process noise](figures/polarization_gaussian_process.png)
+![Polarization with Gaussian Process noise](figures/gaussian_process.png)
 
 We'll stick with white noise in our examples, but include this example for those interested in better modeling the noise.
 
