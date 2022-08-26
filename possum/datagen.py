@@ -23,7 +23,7 @@ generateParams(size, amplitude_generator, chi_generator, depth_generator, noise_
 """
 
 import numpy as np
-from typing import Dict, Optional
+from typing import Dict, Optional, Tuple, Union
 from .faraday import createFaraday
 from .polarization import addPolarizationNoise, createPolarization
 
@@ -247,9 +247,10 @@ def datagen(
     transform:Optional[callable]=None,
     yield_params:bool=False,
     **kwargs
-):
+) -> Tuple[np.ndarray, Union[np.ndarray, dict]]:
     """
-    Generator that yields a Faraday spectrum and class label
+    Generator that yields a Faraday spectrum and either the 
+    class label or the parameter dictionary.
 
     Parameters
     ----------
@@ -281,7 +282,7 @@ def datagen(
         or splitting into two channels.
 
     yield_params : bool
-        Boolean indicating whether to also yield the parameter dictionary
+        Boolean indicating whether to yield the parameter dictionary 
         (True) or just the label (False). Default is False to align with
         Tensorflow's expectation for training.
 
