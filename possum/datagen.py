@@ -311,7 +311,7 @@ def datagen(
     from possum.coverage import ASKAP12
     from possum.datagen import datagen
 
-    nu = ASKAP12(); MHz = nu/1e6
+    nu = ASKAP12()
     phi = np.arange(-100,101)
     dgen = datagen(nu=nu, phi=phi,batch=32)
 
