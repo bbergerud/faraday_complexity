@@ -210,11 +210,11 @@ We'll stick with white noise in our examples, but include this example for those
 
 A demonstration of training our network is given in our [Jupyter notebook](./cnn_training.ipynb). Here, we'll provide a brief exploratory analysis of the performance on complex sources after training a CNN for a little while.
 
-We'll begin by plotting the a comparison of network probablity against the noise level, amplitude ratio, offset in polarization angle, and offset in Faraday depth:
+We'll begin by plotting a comparison of network probablity against the noise level, amplitude ratio, offset in polarization angle, and offset in Faraday depth:
 
 ![](./figures/network_heatmap.png)
 
-The strongest dependency appears to be the amplitude ratio, with the network starting to struggle to detect complex sources when the amplitude of the secondary component drops below 1/5 of the primary component. There is also a bit of a dependence on the offset in Faraday depth in that as the two sources become close together it is difficult to distinguish between complex and simple sources. This is not surprising, as the two sources effectively act as a single source in this regime.
+The strongest dependency appears to be the amplitude ratio, with the network starting to struggle to detect complex sources when the amplitude of the secondary component drops below 1/5 of the primary component. There is also a bit of a dependence on the offset in Faraday depth in that as the two sources become close together it is difficult to distinguish between the two components. This is not surprising, as the two sources effectively act as a single source in this regime.
 
 Since the amplitude ratio and the offset in Faraday depth appear to be the two most important quantities, we can explore how the performance is correlated with both parameters by computing the average output probability in each spatial bin:
 
