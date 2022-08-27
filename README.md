@@ -206,5 +206,22 @@ fig.show()
 
 We'll stick with white noise in our examples, but include this example for those interested in better modeling the noise.
 
+## Network Performance
+
+A demonstration of training our network is given in our [Jupyter notebook](./cnn_training.ipynb). Here, we'll provide a brief exploratory analysis of the performance on complex sources after training a CNN for a little while.
+
+We'll begin by plotting the a comparison of network probablity against the noise level, amplitude ratio, offset in polarization angle, and offset in Faraday depth:
+
+![](./figures/network_heatmap.png)
+
+The strongest dependency appears to be the amplitude ratio, with the network starting to struggle to detect complex sources when the amplitude of the secondary component drops below 1/5 of the primary component. There is also a bit of a dependence on the offset in Faraday depth in that as the two sources become close together it is difficult to distinguish between complex and simple sources. This is not surprising, as the two sources effectively act as a single source in this regime.
+
+Since the amplitude ratio and the offset in Faraday depth appear to be the two most important quantities, we can explore how the performance is correlated with both parameters by computing the average output probability in each spatial bin:
+
+![](./figures/network_heatmap_amplitude_depth.png)
+
+As expected, the network does a good job at classifying complex sources when their amplitudes are within an order of magnitude of each other and their Faraday depths are sufficiently offset from one another.
+
+
 ## Publication
 [Shea Brown, Brandon Bergerud, Allison Costa, B M Gaensler, Jacob Isbell, Daniel LaRocca, Ray Norris, Cormac Purcell, Lawrence Rudnick, Xiaohui Sun, Classifying complex Faraday spectra with convolutional neural networks, Monthly Notices of the Royal Astronomical Society, Volume 483, Issue 1, February 2019, Pages 964–970.](https://ui.adsabs.harvard.edu/abs/2019MNRAS.483..964B)
